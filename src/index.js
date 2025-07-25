@@ -1,14 +1,27 @@
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
-import connectDB from './db/index.js'
+import connectDB from './db/index.js';
+import { app } from './app.js';
+import { SERVER_PORT } from './constants.js';
 
 dotenv.config({
-  path: './env'
-})
+  path: './env',
+});
 
 connectDB()
+  .then(() => {
+    app.on('error', (err) => {
+      console.error('Error: ', err);
+      throw err;
+    });
 
-
+    app.listen(SERVER_PORT, () => {
+      console.log('Server is running at port: ', SERVER_PORT);
+    });
+  })
+  .catch((err) => {
+    console.error('Mongo DB connection failed! ', err);
+  });
 
 /* 
 Approach 1 : connecting DB and app in one file
